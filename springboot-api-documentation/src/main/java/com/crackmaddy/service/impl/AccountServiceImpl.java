@@ -1,10 +1,13 @@
 package com.crackmaddy.service.impl;
 
 import com.crackmaddy.constants.AccountConstants;
+import com.crackmaddy.dto.AccountDto;
 import com.crackmaddy.dto.CustomerDto;
 import com.crackmaddy.entity.Account;
 import com.crackmaddy.entity.Customer;
 import com.crackmaddy.exception.CustomerAlreadyExistsException;
+import com.crackmaddy.exception.ResourceNotFoundException;
+import com.crackmaddy.mapper.AccountMapper;
 import com.crackmaddy.mapper.CustomerMapper;
 import com.crackmaddy.respository.AccountRepository;
 import com.crackmaddy.respository.CustomerRepository;
@@ -24,6 +27,21 @@ public class AccountServiceImpl implements IAccountService {
 
     private final AccountRepository accountRepository;
     private final CustomerRepository customerRepository;
+
+    @Override
+    public CustomerDto fetchAccount(String mobileNumber) {
+        Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
+                () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
+        );
+        Account account = accountRepository.findByCustomerId(customer.getId()).orElseThrow(
+                () -> new ResourceNotFoundException("Account", "customerId", customer.getId().toString())
+        );
+
+        CustomerDto customerDto = CustomerMapper.toCustomerDto(customer, new CustomerDto());
+        customerDto.setAccountDto(AccountMapper.toAccountDto(account, new AccountDto()));
+
+        return customerDto;
+    }
 
     @Override
     public void createAccount(CustomerDto customerDto) {

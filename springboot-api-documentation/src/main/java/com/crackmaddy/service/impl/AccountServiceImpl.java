@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
 
@@ -32,6 +33,8 @@ public class AccountServiceImpl implements IAccountService {
         if (optionalCustomer.isPresent()) {
             throw new CustomerAlreadyExistsException("Customer already registered with given mobile number: " + customer.getMobileNumber());
         }
+        customer.setCreatedAt(LocalDateTime.now());
+        customer.setCreatedBy("Anonymous");
         Customer savedCustomer = customerRepository.save(customer);
         accountRepository.save(createNewAccount(savedCustomer));
     }
@@ -41,6 +44,8 @@ public class AccountServiceImpl implements IAccountService {
         account.setCustomerId(customer.getId());
         long randomAccountNumber = 1000000000L + new Random().nextInt(900000000);
 
+        account.setCreatedAt(LocalDateTime.now());
+        account.setCreatedBy("Anonymous");
         account.setAccountNumber(randomAccountNumber);
         account.setAccountType(AccountConstants.SAVINGS);
         account.setBranchAddress(AccountConstants.ADDRESS);

@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 @Setter
 @MappedSuperclass
 public class BaseEntity {
-    @Column(updatable = false)
+    @Column(updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(updatable = false)
+    @Column(updatable = false, nullable = false)
     private String createdBy;
 
     @Column(insertable = false)
